@@ -1,4 +1,4 @@
-# mock-ec2-metadata [![Build Status](https://travis-ci.org/NYTimes/mock-ec2-metadata.svg?branch=master)](https://travis-ci.org/travis-ci/NYTimes/mock-ec2-metadata)
+# mock-ec2-metadata [![Build Status](https://travis-ci.org/NYTimes/mock-ec2-metadata.svg?branch=master)](https://travis-ci.org/NYTimes/mock-ec2-metadata)
 
 
 A simple service to mock the ec2 metadata service.

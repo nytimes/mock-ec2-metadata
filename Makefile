@@ -36,7 +36,7 @@ release:
 clean:
 	@test ! -e bin/|| rm -f bin/*
 
-test:
+tests:
 	go test ./...
 
 fmt:
