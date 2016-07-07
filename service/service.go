@@ -1,15 +1,14 @@
 package service
 
 import (
-	"net/http"
 	"github.com/NYTimes/gizmo/server"
 	"github.com/Sirupsen/logrus"
+	"net/http"
 )
 
 type (
-
 	Config struct {
-		Server    *server.Config
+		Server        *server.Config
 		MetadataItems map[string]interface{}
 	}
 	MetadataService struct {
@@ -18,7 +17,7 @@ type (
 )
 
 func NewMetadataService(cfg *Config) *MetadataService {
-        return &MetadataService{cfg}
+	return &MetadataService{cfg}
 }
 
 func (s *MetadataService) Middleware(h http.Handler) http.Handler {
@@ -55,14 +54,14 @@ func (s *MetadataService) Endpoints() map[string]map[string]http.HandlerFunc {
 
 	handlers := make(map[string]map[string]http.HandlerFunc)
 	for url, value := range s.config.MetadataItems {
-        server.Log.Info("adding route for url", url, " value ", value)
+		server.Log.Info("adding route for url", url, " value ", value)
 
-        handlers[url] = map[string]http.HandlerFunc {
+		handlers[url] = map[string]http.HandlerFunc{
 			"GET": server.JSONToHTTP(s.GetMetadataItem).ServeHTTP,
 		}
 	}
-	handlers["/"] = map[string]http.HandlerFunc {
-			"GET": server.JSONToHTTP(s.GetIndex).ServeHTTP,
+	handlers["/"] = map[string]http.HandlerFunc{
+		"GET": server.JSONToHTTP(s.GetIndex).ServeHTTP,
 	}
 	return handlers
 }
