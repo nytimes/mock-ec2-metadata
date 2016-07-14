@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-	// showing 1 way of managing gizmo/config: importing from a local file
 	var cfg *service.Config
 	config.LoadJSONFile("./config.json", &cfg)
 
