@@ -5,6 +5,7 @@ After=network.target
 [Service]
 Type=simple
 ExecStart=/usr/local/bin/mock-ec2-metadata
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
