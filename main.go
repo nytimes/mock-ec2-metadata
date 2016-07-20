@@ -1,15 +1,23 @@
 package main
 
 import (
+	"os"
+
 	"github.com/NYTimes/gizmo/config"
 	"github.com/NYTimes/gizmo/server"
 	"github.com/NYTimes/mock-ec2-metadata/service"
 )
 
 func main() {
-	// showing 1 way of managing gizmo/config: importing from a local file
 	var cfg *service.Config
-	config.LoadJSONFile("./config.json", &cfg)
+
+	if _, err := os.Stat("./mock-ec2-metadata-config.json"); err == nil {
+  		config.LoadJSONFile("./mock-ec2-metadata-config.json", &cfg)
+	} else if _, err := os.Stat("/etc/mock-ec2-metadata-config.json"); err == nil  {
+		config.LoadJSONFile("/etc/mock-ec2-metadata-config.json", &cfg)
+	} else {
+		server.Log.Fatal("unable to locate config file")
+	}
 
 	server.Init("mock-ec2-metadata", cfg.Server)
 	err := server.Register(service.NewMetadataService(cfg))

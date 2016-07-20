@@ -1,15 +1,35 @@
 package service
 
 import (
-	"github.com/NYTimes/gizmo/server"
-	"github.com/Sirupsen/logrus"
+	"fmt"
+	"strings"
+	"encoding/json"
 	"net/http"
+
+	"github.com/NYTimes/gizmo/server"
+	"github.com/NYTimes/gizmo/web"
 )
 
 type (
+	SecurityCredentials struct {
+		User string 			`json:"User"`
+		AccessKeyId string		`json:"AccessKeyId"`
+		SecretAccessKey string	`json:"SecretAccessKey"`
+		Token string			`json:"Token"`
+		Expiration string		`json:"Expiration"`
+	}
+
+	MetadataValues struct {
+		Hostname string 							`json:"hostname"`
+		InstanceId string 							`json:"instance-id"`
+		InstanceType string 						`json:"instance-type"`
+		SecurityCredentials SecurityCredentials 	`json:"security-credentials"`
+	}
+
 	Config struct {
-		Server        *server.Config
-		MetadataItems map[string]interface{}
+		Server 				*server.Config
+		MetadataValues 		*MetadataValues
+		MetadataPrefixes	[] string
 	}
 	MetadataService struct {
 		config *Config
@@ -24,44 +44,120 @@ func (s *MetadataService) Middleware(h http.Handler) http.Handler {
 	return h
 }
 
-func (s *MetadataService) JSONMiddleware(j server.JSONEndpoint) server.JSONEndpoint {
-	return func(r *http.Request) (int, interface{}, error) {
+func (s *MetadataService) GetHostName(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
+	res := fmt.Sprint(s.config.MetadataValues.Hostname)
+	fmt.Fprintf(w, res)
+	server.Log.Info("GetHostName returning: ", res)
+	return
+}
 
-		status, res, err := j(r)
+func (s *MetadataService) GetInstanceId(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
+	res := fmt.Sprint(s.config.MetadataValues.InstanceId)
+	fmt.Fprintf(w, res)
+	server.Log.Info("GetInstanceId returning: ", res)
+	return
+}
+
+func (s *MetadataService) GetInstanceType(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
+	res := fmt.Sprint(s.config.MetadataValues.InstanceType)
+	fmt.Fprintf(w, res)
+	server.Log.Info("GetInstanceType returning: ", res)
+	return
+}
+
+func (s *MetadataService) GetIAM(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
+	res := fmt.Sprint("security-credentials/")
+	fmt.Fprintf(w, res)
+	server.Log.Info("GetIAM returning: ", res)
+	return
+}
+
+func (s *MetadataService) GetSecurityCredentials(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
+	res := fmt.Sprint(s.config.MetadataValues.SecurityCredentials.User)
+	server.Log.Info("GetSecurityCredentials returning: ", res)
+	fmt.Fprintf(w, res)
+	return
+}
+
+func (s *MetadataService) GetSecurityCredentialDetails(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
+	username := web.Vars(r)["username"]
+
+	if username == s.config.MetadataValues.SecurityCredentials.User {
+		details, err := json.MarshalIndent(s.config.MetadataValues.SecurityCredentials, "", "\t")
 		if err != nil {
-			server.LogWithFields(r).WithFields(logrus.Fields{
-				"error": err,
-			}).Error("problems with serving request")
-			return http.StatusServiceUnavailable, nil, &jsonErr{"sorry, this service is unavailable"}
+			server.Log.Error("error converting security credentails to json: ", err)
+			http.Error(w, "", http.StatusNotFound)
+
+			return
+	 	}else {
+	 		server.Log.Info("GetSecurityCredentialDetails returning: ", details)
+
+			w.Write(details)
+			return
 		}
-
-		server.LogWithFields(r).Info("success!")
-		return status, res, nil
+	} else {
+		server.Log.Error("error, IAM user not found")
+		http.Error(w, "", http.StatusNotFound)
 	}
+
+	return
 }
 
-func (s *MetadataService) GetMetadataItem(r *http.Request) (int, interface{}, error) {
-	res := s.config.MetadataItems[r.URL.Path]
-	return http.StatusOK, res, nil
+func (s *MetadataService) GetMetadataIndex(w http.ResponseWriter, r *http.Request) {
+
+	index :=  []string{"hostname",
+					 "instance-id",
+					 "instance-type",
+					 "iam/"}
+	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
+	res := fmt.Sprint(strings.Join(index, "\n"))
+	server.Log.Info("GetMetadataIndex returning: ", res)
+	fmt.Fprintf(w, res )
+	return
 }
 
-func (s *MetadataService) GetIndex(r *http.Request) (int, interface{}, error) {
-	return http.StatusOK, "Mock EC2 Metadata Service", nil
+func (s *MetadataService) GetIndex(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Mock EC2 Metadata Service")
+	return
 }
 
-// JSONEndpoints is a listing of all endpoints available in the MetadataService.
-func (s *MetadataService) Endpoints() map[string]map[string]http.HandlerFunc {
+// Endpoints is a listing of all endpoints available in the MetadataService.
+func (service *MetadataService) Endpoints() map[string]map[string]http.HandlerFunc {
 
 	handlers := make(map[string]map[string]http.HandlerFunc)
-	for url, value := range s.config.MetadataItems {
-		server.Log.Info("adding route for url", url, " value ", value)
+	for index, value := range service.config.MetadataPrefixes {
+		server.Log.Info("adding Metadata prefix (", index, ") ", value)
 
-		handlers[url] = map[string]http.HandlerFunc{
-			"GET": server.JSONToHTTP(s.GetMetadataItem).ServeHTTP,
+		handlers[value + "/" ] = map[string]http.HandlerFunc{
+			"GET": service.GetMetadataIndex,
+		}
+		handlers[value + "/hostname" ] = map[string]http.HandlerFunc{
+			"GET": service.GetHostName,
+		}
+		handlers[value + "/instance-id" ] = map[string]http.HandlerFunc{
+			"GET": service.GetInstanceId,
+		}
+		handlers[value + "/instance-type" ] = map[string]http.HandlerFunc{
+			"GET": service.GetInstanceType,
+		}
+		handlers[value + "/iam/" ] = map[string]http.HandlerFunc{
+			"GET": service.GetIAM,
+		}
+		handlers[value + "/iam/security-credentials/" ] = map[string]http.HandlerFunc{
+			"GET": service.GetSecurityCredentials,
+		}
+		handlers[value + "/iam/security-credentials/{username}" ] = map[string]http.HandlerFunc{
+			"GET": service.GetSecurityCredentialDetails,
 		}
 	}
 	handlers["/"] = map[string]http.HandlerFunc{
-		"GET": server.JSONToHTTP(s.GetIndex).ServeHTTP,
+		"GET": service.GetIndex,
 	}
 	return handlers
 }
@@ -70,10 +166,10 @@ func (s *MetadataService) Prefix() string {
 	return "/"
 }
 
-type jsonErr struct {
-	Err string `json:"error"`
+type error struct {
+	Err string
 }
 
-func (e *jsonErr) Error() string {
+func (e *error) Error() string {
 	return e.Err
 }
