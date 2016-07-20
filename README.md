@@ -24,11 +24,13 @@ $ service iptables save
 All configuration is contained in either `./mock-ec2-metadata-config.json` or `/etc/mock-ec2-metadata-config.json`, the former overriding the latter.
 
 Currently the support URLs for the metadata service are:
-* http://169.254.169.154/latest/meta-data/latest/
-* http://169.254.169.154/latest/meta-data/latest/meta-data/hostname
-* http://169.254.169.154/latest/meta-data/latest/instance-id
-* http://169.254.169.154/latest/meta-data/latest/instance-type
-* http://169.254.169.154/latest/meta-data/latest/iam/security-credentials
+
+  * http://169.254.169.254/latest/meta-data/latest/
+  * http://169.254.169.254/latest/meta-data/latest/meta-data/hostname
+  * http://169.254.169.254/latest/meta-data/latest/instance-id
+  * http://169.254.169.254/latest/meta-data/latest/instance-type
+  * http://169.254.169.254/latest/meta-data/latest/iam/security-credentials
+
 
 ## Getting started
 
