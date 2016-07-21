@@ -1,10 +1,10 @@
 package service
 
 import (
-	"fmt"
-	"strings"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/NYTimes/gizmo/server"
 	"github.com/NYTimes/gizmo/web"
@@ -12,24 +12,24 @@ import (
 
 type (
 	SecurityCredentials struct {
-		User string 			`json:"User"`
-		AccessKeyId string		`json:"AccessKeyId"`
-		SecretAccessKey string	`json:"SecretAccessKey"`
-		Token string			`json:"Token"`
-		Expiration string		`json:"Expiration"`
+		User            string `json:"User"`
+		AccessKeyId     string `json:"AccessKeyId"`
+		SecretAccessKey string `json:"SecretAccessKey"`
+		Token           string `json:"Token"`
+		Expiration      string `json:"Expiration"`
 	}
 
 	MetadataValues struct {
-		Hostname string 							`json:"hostname"`
-		InstanceId string 							`json:"instance-id"`
-		InstanceType string 						`json:"instance-type"`
-		SecurityCredentials SecurityCredentials 	`json:"security-credentials"`
+		Hostname            string              `json:"hostname"`
+		InstanceId          string              `json:"instance-id"`
+		InstanceType        string              `json:"instance-type"`
+		SecurityCredentials SecurityCredentials `json:"security-credentials"`
 	}
 
 	Config struct {
-		Server 				*server.Config
-		MetadataValues 		*MetadataValues
-		MetadataPrefixes	[] string
+		Server           *server.Config
+		MetadataValues   *MetadataValues
+		MetadataPrefixes []string
 	}
 	MetadataService struct {
 		config *Config
@@ -95,8 +95,8 @@ func (s *MetadataService) GetSecurityCredentialDetails(w http.ResponseWriter, r 
 			http.Error(w, "", http.StatusNotFound)
 
 			return
-	 	}else {
-	 		server.Log.Info("GetSecurityCredentialDetails returning: ", details)
+		} else {
+			server.Log.Info("GetSecurityCredentialDetails returning: ", details)
 
 			w.Write(details)
 			return
@@ -111,14 +111,14 @@ func (s *MetadataService) GetSecurityCredentialDetails(w http.ResponseWriter, r 
 
 func (s *MetadataService) GetMetadataIndex(w http.ResponseWriter, r *http.Request) {
 
-	index :=  []string{"hostname",
-					 "instance-id",
-					 "instance-type",
-					 "iam/"}
+	index := []string{"hostname",
+		"instance-id",
+		"instance-type",
+		"iam/"}
 	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
 	res := fmt.Sprint(strings.Join(index, "\n"))
 	server.Log.Info("GetMetadataIndex returning: ", res)
-	fmt.Fprintf(w, res )
+	fmt.Fprintf(w, res)
 	return
 }
 
@@ -134,25 +134,25 @@ func (service *MetadataService) Endpoints() map[string]map[string]http.HandlerFu
 	for index, value := range service.config.MetadataPrefixes {
 		server.Log.Info("adding Metadata prefix (", index, ") ", value)
 
-		handlers[value + "/" ] = map[string]http.HandlerFunc{
+		handlers[value+"/"] = map[string]http.HandlerFunc{
 			"GET": service.GetMetadataIndex,
 		}
-		handlers[value + "/hostname" ] = map[string]http.HandlerFunc{
+		handlers[value+"/hostname"] = map[string]http.HandlerFunc{
 			"GET": service.GetHostName,
 		}
-		handlers[value + "/instance-id" ] = map[string]http.HandlerFunc{
+		handlers[value+"/instance-id"] = map[string]http.HandlerFunc{
 			"GET": service.GetInstanceId,
 		}
-		handlers[value + "/instance-type" ] = map[string]http.HandlerFunc{
+		handlers[value+"/instance-type"] = map[string]http.HandlerFunc{
 			"GET": service.GetInstanceType,
 		}
-		handlers[value + "/iam/" ] = map[string]http.HandlerFunc{
+		handlers[value+"/iam/"] = map[string]http.HandlerFunc{
 			"GET": service.GetIAM,
 		}
-		handlers[value + "/iam/security-credentials/" ] = map[string]http.HandlerFunc{
+		handlers[value+"/iam/security-credentials/"] = map[string]http.HandlerFunc{
 			"GET": service.GetSecurityCredentials,
 		}
-		handlers[value + "/iam/security-credentials/{username}" ] = map[string]http.HandlerFunc{
+		handlers[value+"/iam/security-credentials/{username}"] = map[string]http.HandlerFunc{
 			"GET": service.GetSecurityCredentialDetails,
 		}
 	}
