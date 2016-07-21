@@ -44,11 +44,11 @@ func (s *MetadataService) Middleware(h http.Handler) http.Handler {
 }
 
 // middleware for adding plaintext content type
-func plainText(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func plainText(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "text/plain; charset=utf-8")
-		h.ServeHTTP(w, r)
-	})
+		h(w, r)
+	}
 }
 
 func (s *MetadataService) GetHostName(w http.ResponseWriter, r *http.Request) {
@@ -60,7 +60,7 @@ func (s *MetadataService) GetInstanceId(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s *MetadataService) GetInstanceType(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(s.config.MetadataValues.InstanceType)
+	fmt.Fprintf(w, s.config.MetadataValues.InstanceType)
 }
 
 func (s *MetadataService) GetIAM(w http.ResponseWriter, r *http.Request) {
@@ -88,7 +88,7 @@ func (s *MetadataService) GetSecurityCredentialDetails(w http.ResponseWriter, r 
 		return
 	}
 
-	server.LogWithFiels(r).Info("GetSecurityCredentialDetails returning: %#v",
+	server.LogWithFields(r).Info("GetSecurityCredentialDetails returning: %#v",
 		s.config.MetadataValues.SecurityCredentials)
 }
 
