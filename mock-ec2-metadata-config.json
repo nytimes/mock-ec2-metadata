@@ -20,5 +20,34 @@
     "MetadataPrefixes": [
         "/2009-04-04/meta-data",
         "/latest/meta-data"
+    ],
+
+    "UserdataValues" : {
+        "environment_code" : "dev",
+        "environment_name" : "Development",
+        "app_code" : "mock",
+        "app_name" : "mock_app",
+        "app_email" : "nobody@nytimes.com",
+        "app_description": "Mock Metadata Description",
+        "cluster_code" : "cluster_code",
+        "cluster_name" : "cluser_name",
+        "cluster_stack" : "cluster_stack",
+        "instance_configuration_name" : "test1",
+        "hostname_suffix" : "test1",
+        "volume_sizes_gb" : "8",
+        "volume_devices" : "/dev/sda1",
+        "volume_mount_points" : "/",
+        "volume_snapshot_frequencies" :"",
+        "snapshot_days_retained" : "7",
+        "region_code" : "iad2",
+        "hostname" : "mock-hostname",
+        "vpc_name" :"vpc",
+        "subnet_name" : "subnet",
+        "nimbul_key" :"key",
+        "build_tag" : "build_tag"
+    },
+    "UserdataPrefixes": [
+        "/2009-04-04/user-data",
+        "/latest/user-data"
     ]
 }

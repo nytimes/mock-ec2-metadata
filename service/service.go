@@ -29,7 +29,10 @@ type (
 		Server           *server.Config
 		MetadataValues   *MetadataValues
 		MetadataPrefixes []string
+		UserdataValues   map[string]string
+		UserdataPrefixes []string
 	}
+
 	MetadataService struct {
 		config *Config
 	}
@@ -99,6 +102,13 @@ instance-type
 iam`)
 }
 
+func (s *MetadataService) GetUserData(w http.ResponseWriter, r *http.Request) {
+
+	for index, value := range s.config.UserdataValues {
+		fmt.Fprintf(w, fmt.Sprint(index+"="+value+"\n"))
+	}
+}
+
 func (s *MetadataService) GetIndex(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Mock EC2 Metadata Service")
 }
@@ -129,6 +139,14 @@ func (service *MetadataService) Endpoints() map[string]map[string]http.HandlerFu
 		}
 		handlers[value+"/iam/security-credentials/{username}"] = map[string]http.HandlerFunc{
 			"GET": service.GetSecurityCredentialDetails,
+		}
+	}
+
+	for index, value := range service.config.UserdataPrefixes {
+		server.Log.Info("adding Userdata prefix (", index, ") ", value)
+
+		handlers[value+"/"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetUserData),
 		}
 	}
 	handlers["/"] = map[string]http.HandlerFunc{
