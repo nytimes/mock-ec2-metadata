@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/NYTimes/gizmo/server"
 	"github.com/NYTimes/gizmo/web"
@@ -19,9 +20,20 @@ type (
 	}
 
 	MetadataValues struct {
+		AmiId               string              `json:"ami-id"`
+		AmiLaunchIndex      string              `json:"ami-launch-index"`
+		AmiManifestPath     string              `json:"ami-manifest-path"`
+		AvailabilityZone    string              `json:"availability-zone"`
 		Hostname            string              `json:"hostname"`
+		InstanceAction      string              `json:"instance-action"`
 		InstanceId          string              `json:"instance-id"`
 		InstanceType        string              `json:"instance-type"`
+		LocalHostName       string              `json:"local-hostname"`
+		LocalIpv4           string              `json:"local-ipv4"`
+		Mac                 string              `json:"mac"`
+		Profile             string              `json:"profile"`
+		ReservationId       string              `json:"reservation-id"`
+		SecurityGroups      []string            `json:"security-groups"`
 		SecurityCredentials SecurityCredentials `json:"security-credentials"`
 	}
 
@@ -54,8 +66,28 @@ func plainText(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+func (s *MetadataService) GetAmiId(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, s.config.MetadataValues.AmiId)
+}
+
+func (s *MetadataService) GetAmiLaunchIndex(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, s.config.MetadataValues.AmiLaunchIndex)
+}
+
+func (s *MetadataService) GetAmiManifestPath(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, s.config.MetadataValues.AmiManifestPath)
+}
+
+func (s *MetadataService) GetAvailabilityZone(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, s.config.MetadataValues.AvailabilityZone)
+}
+
 func (s *MetadataService) GetHostName(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, s.config.MetadataValues.Hostname)
+}
+
+func (s *MetadataService) GetInstanceAction(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, s.config.MetadataValues.InstanceAction)
 }
 
 func (s *MetadataService) GetInstanceId(w http.ResponseWriter, r *http.Request) {
@@ -66,12 +98,36 @@ func (s *MetadataService) GetInstanceType(w http.ResponseWriter, r *http.Request
 	fmt.Fprintf(w, s.config.MetadataValues.InstanceType)
 }
 
+func (s *MetadataService) GetLocalHostName(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, s.config.MetadataValues.LocalHostName)
+}
+
+func (s *MetadataService) GetLocalIpv4(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, s.config.MetadataValues.LocalIpv4)
+}
+
 func (s *MetadataService) GetIAM(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "security-credentials/")
 }
 
+func (s *MetadataService) GetMac(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, s.config.MetadataValues.Mac)
+}
+
+func (s *MetadataService) GetProfile(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, s.config.MetadataValues.Profile)
+}
+
+func (s *MetadataService) GetReservationId(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, s.config.MetadataValues.ReservationId)
+}
+
 func (s *MetadataService) GetSecurityCredentials(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, s.config.MetadataValues.SecurityCredentials.User)
+}
+
+func (s *MetadataService) GetSecurityGroups(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, strings.Join(s.config.MetadataValues.SecurityGroups, "\n"))
 }
 
 func (s *MetadataService) GetSecurityCredentialDetails(w http.ResponseWriter, r *http.Request) {
@@ -122,8 +178,23 @@ func (service *MetadataService) Endpoints() map[string]map[string]http.HandlerFu
 		handlers[value+"/"] = map[string]http.HandlerFunc{
 			"GET": plainText(service.GetMetadataIndex),
 		}
+		handlers[value+"/ami-id"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetAmiId),
+		}
+		handlers[value+"/ami-launch-index"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetAmiLaunchIndex),
+		}
+		handlers[value+"/ami-manifest-path"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetAmiManifestPath),
+		}
+		handlers[value+"/placement/availability-zone"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetAvailabilityZone),
+		}
 		handlers[value+"/hostname"] = map[string]http.HandlerFunc{
 			"GET": plainText(service.GetHostName),
+		}
+		handlers[value+"/instance-action"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetInstanceAction),
 		}
 		handlers[value+"/instance-id"] = map[string]http.HandlerFunc{
 			"GET": plainText(service.GetInstanceId),
@@ -139,6 +210,24 @@ func (service *MetadataService) Endpoints() map[string]map[string]http.HandlerFu
 		}
 		handlers[value+"/iam/security-credentials/{username}"] = map[string]http.HandlerFunc{
 			"GET": service.GetSecurityCredentialDetails,
+		}
+		handlers[value+"/local-hostname"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetLocalHostName),
+		}
+		handlers[value+"/local-ipv4"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetLocalIpv4),
+		}
+		handlers[value+"/mac"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetMac),
+		}
+		handlers[value+"/profile"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetProfile),
+		}
+		handlers[value+"/reservation-id"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetReservationId),
+		}
+		handlers[value+"/security-groups"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetSecurityGroups),
 		}
 	}
 
