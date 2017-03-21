@@ -6,16 +6,27 @@
     },
 
     "MetadataValues" : {
+        "ami-id": "ami-1234",
+        "ami-launch-index": "0",
+        "ami-manifest-path": "(unknown)",
+        "availability-zone": "ww-region-1a",
         "hostname": "mock-hostname",
+        "instance-action": "mock-instance-action",
         "instance-id": "mock-instance-id",
         "instance-type": "mock-instance-type",
+        "mac": "00:00:00:00:00:00",
+        "profile": "mock-profile",
+        "reservation-id":"mock-reservation-id",
         "security-credentials": {
             "user": "mock-user",
             "AccessKeyId" : "mock-access-key",
             "SecretAccessKey" : "mock-secret-key",
             "Token": "mock-token",
             "Expiration": "2112-12-31T11:59:59Z"
-        }
+        },
+        "security-groups": [
+            "mock-security-group"
+        ]
     },
     "MetadataPrefixes": [
         "/2009-04-04/meta-data",

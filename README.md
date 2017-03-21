@@ -25,11 +25,22 @@ All configuration is contained in either `./mock-ec2-metadata-config.json` or `/
 
 Currently the support URLs for the metadata service are:
 
-  * http://169.254.169.254/latest/meta-data/latest/
-  * http://169.254.169.254/latest/meta-data/latest/meta-data/hostname
-  * http://169.254.169.254/latest/meta-data/latest/instance-id
-  * http://169.254.169.254/latest/meta-data/latest/instance-type
-  * http://169.254.169.254/latest/meta-data/latest/iam/security-credentials
+  * http://169.254.169.254/latest/meta-data/
+  * http://169.254.169.254/latest/meta-data/ami-id
+  * http://169.254.169.254/latest/meta-data/ami-launch-index
+  * http://169.254.169.254/latest/meta-data/ami-manifest-path
+  * http://169.254.169.254/latest/meta-data/placement/availability-zone
+  * http://169.254.169.254/latest/meta-data/hostname
+  * http://169.254.169.254/latest/meta-data/instance-action
+  * http://169.254.169.254/latest/meta-data/instance-id
+  * http://169.254.169.254/latest/meta-data/instance-type
+  * http://169.254.169.254/latest/meta-data/local-hostname
+  * http://169.254.169.254/latest/meta-data/local-ipv4
+  * http://169.254.169.254/latest/meta-data/mac
+  * http://169.254.169.254/latest/meta-data/profile
+  * http://169.254.169.254/latest/meta-data/reservation-id
+  * http://169.254.169.254/latest/meta-data/security-groups
+  * http://169.254.169.254/latest/meta-data/iam/security-credentials
 
 
 ## Getting started
