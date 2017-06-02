@@ -16,6 +16,7 @@ help:
 	@echo
 	@echo 'Usage:'
 	@echo '    make build    Compile the project.'
+	@echo '    make deps     Download dependencies.'
 	@echo '    make test     Run tests on a compiled project.'
 	@echo '    make fmt      Reformat the source tree with gofmt.'
 	@echo '    make clean    Clean the directory tree.'

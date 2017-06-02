@@ -50,6 +50,7 @@ This project requires Go to be installed. On OS X with Homebrew you can just run
 Running it then should be as simple as:
 
 ```console
+$ make deps
 $ make
 $ ./bin/mock-ec2-metadata
 ```
