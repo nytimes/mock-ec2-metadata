@@ -17,6 +17,7 @@ type (
 		SecretAccessKey string `json:"SecretAccessKey"`
 		Token           string `json:"Token"`
 		Expiration      string `json:"Expiration"`
+		Code            string `json:"Code"`
 	}
 
 	MetadataValues struct {
