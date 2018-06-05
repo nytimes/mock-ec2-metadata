@@ -22,7 +22,8 @@
             "AccessKeyId" : "mock-access-key",
             "SecretAccessKey" : "mock-secret-key",
             "Token": "mock-token",
-            "Expiration": "2112-12-31T11:59:59Z"
+            "Expiration": "2112-12-31T11:59:59Z",
+            "Code": "Success"
         },
         "security-groups": [
             "mock-security-group"
