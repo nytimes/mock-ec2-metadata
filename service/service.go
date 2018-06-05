@@ -66,6 +66,12 @@ func plainText(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+func movedPermanently(redirectPath string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, redirectPath, http.StatusMovedPermanently)
+	}
+}
+
 func (s *MetadataService) GetAmiId(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, s.config.MetadataValues.AmiId)
 }
@@ -204,6 +210,9 @@ func (service *MetadataService) Endpoints() map[string]map[string]http.HandlerFu
 		}
 		handlers[value+"/iam/"] = map[string]http.HandlerFunc{
 			"GET": plainText(service.GetIAM),
+		}
+		handlers[value+"/iam/security-credentials"] = map[string]http.HandlerFunc{
+			"GET": movedPermanently(value + "/iam/security-credentials/"),
 		}
 		handlers[value+"/iam/security-credentials/"] = map[string]http.HandlerFunc{
 			"GET": plainText(service.GetSecurityCredentials),
