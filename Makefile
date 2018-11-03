@@ -26,6 +26,7 @@ deps:
 	go get github.com/mtibben/gogpm
 	go get github.com/tcnksm/ghr
 	go get github.com/mitchellh/gox
+	go get github.com/Sirupsen/logrus
 	$(GOPATH)/bin/gogpm install
 
 build:
