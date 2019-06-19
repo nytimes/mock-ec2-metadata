@@ -1,4 +1,4 @@
-package service
+package metadata
 
 import (
 	"encoding/json"
@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/NYTimes/gizmo/server"
-	"github.com/NYTimes/gizmo/web"
 )
 
 type (
@@ -138,7 +137,7 @@ func (s *MetadataService) GetSecurityGroups(w http.ResponseWriter, r *http.Reque
 }
 
 func (s *MetadataService) GetSecurityCredentialDetails(w http.ResponseWriter, r *http.Request) {
-	username := web.Vars(r)["username"]
+	username := server.Vars(r)["username"]
 
 	if username != s.config.MetadataValues.SecurityCredentials.User {
 		server.Log.Error("error, IAM user not found")
