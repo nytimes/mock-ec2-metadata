@@ -6,8 +6,7 @@
 
 # Program version
 VERSION := $(shell grep "const Version " version.go | sed -E 's/.*"(.+)"$$/\1/')
-
-INSTALL_PATH=$(GOPATH)/src/github.com/NYTimes/mock-ec2-metadata
+GOPATH := $(shell go env GOPATH)
 
 default: build
 
@@ -23,14 +22,18 @@ help:
 	@echo
 
 deps:
-	go get github.com/mtibben/gogpm
-	go get github.com/tcnksm/ghr
-	go get github.com/mitchellh/gox
-	go get github.com/Sirupsen/logrus
-	$(GOPATH)/bin/gogpm install
+	@go get github.com/mitchellh/gox
+	@go get github.com/tcnksm/ghr
+	@go get -v .;
+	@go mod tidy;
+
+# Runs the go vet command, will be a dependency for any test.
+vet:
+	@go vet .
+	@go vet ./...
 
 build:
-	$(GOPATH)/bin/gox -output "bin/{{.Dir}}_${VERSION}_{{.OS}}_{{.Arch}}" -os="linux" -os="darwin" -arch="386" -arch="amd64" ./
+	$(GOPATH)/bin/gox -verbose -output "bin/{{.Dir}}_${VERSION}_{{.OS}}_{{.Arch}}" -os="linux" -os="darwin" -arch="386" -arch="amd64" ./cmd/server
 
 release:
 	$(GOPATH)/bin/ghr --username NYTimes --token ${GITHUB_TOKEN} -r mock-ec2-metadata --replace ${VERSION} bin/

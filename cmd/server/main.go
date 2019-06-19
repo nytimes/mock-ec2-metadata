@@ -5,11 +5,11 @@ import (
 
 	"github.com/NYTimes/gizmo/config"
 	"github.com/NYTimes/gizmo/server"
-	"github.com/NYTimes/mock-ec2-metadata/service"
+	metadata "github.com/NYTimes/mock-ec2-metadata"
 )
 
 func main() {
-	var cfg *service.Config
+	var cfg *metadata.Config
 
 	if _, err := os.Stat("./mock-ec2-metadata-config.json"); err == nil {
 		config.LoadJSONFile("./mock-ec2-metadata-config.json", &cfg)
@@ -20,7 +20,7 @@ func main() {
 	}
 
 	server.Init("mock-ec2-metadata", cfg.Server)
-	err := server.Register(service.NewMetadataService(cfg))
+	err := server.Register(metadata.NewMetadataService(cfg))
 	if err != nil {
 		server.Log.Fatal("unable to register service: ", err)
 	}
