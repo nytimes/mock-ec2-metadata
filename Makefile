@@ -6,7 +6,7 @@
 
 # Program version
 VERSION := $(shell grep "const Version " version.go | sed -E 's/.*"(.+)"$$/\1/')
-
+GOPATH := $(shell go env GOPATH)
 
 default: build
 
@@ -22,6 +22,7 @@ help:
 	@echo
 
 deps:
+	@go get github.com/mitchellh/gox
 	@go get -v .;
 	@go mod tidy;
 
@@ -31,8 +32,7 @@ vet:
 	@go vet ./...
 
 build:
-	@cd ./cmd/server; \
-	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server .
+	$(GOPATH)/bin/gox -verbose -output "bin/{{.Dir}}_${VERSION}_{{.OS}}_{{.Arch}}" -os="linux" -os="darwin" -arch="386" -arch="amd64" ./cmd/server
 
 release:
 	$(GOPATH)/bin/ghr --username NYTimes --token ${GITHUB_TOKEN} -r mock-ec2-metadata --replace ${VERSION} bin/
