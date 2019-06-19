@@ -23,6 +23,7 @@ help:
 
 deps:
 	@go get github.com/mitchellh/gox
+	@go get github.com/tcnksm/ghr
 	@go get -v .;
 	@go mod tidy;
 
