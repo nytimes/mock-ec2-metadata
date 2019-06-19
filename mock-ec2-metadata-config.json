@@ -17,8 +17,8 @@
         "mac": "00:00:00:00:00:00",
         "profile": "mock-profile",
         "reservation-id":"mock-reservation-id",
+        "user" : "mock-user",
         "security-credentials": {
-            "user": "mock-user",
             "AccessKeyId" : "mock-access-key",
             "SecretAccessKey" : "mock-secret-key",
             "Token": "mock-token",
