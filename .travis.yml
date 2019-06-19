@@ -2,8 +2,7 @@ language: go
 go:
   - 1.11.x
 env:
-  - "PATH=/home/travis/gopath/bin:$PATH"
-  - GO111MODULE=on
+  - "PATH=/home/travis/gopath/bin:$PATH" GO111MODULE=on
 before_install:
   - make deps
 script:
