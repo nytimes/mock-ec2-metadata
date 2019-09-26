@@ -55,6 +55,21 @@ $ make
 $ ./bin/mock-ec2-metadata
 ```
 
+### Running in docker
+
+This project includes a Dockerfile for building containers to run the service. The built container
+will start the mock-ec2-metadata service by default and looks for configuration in the `/go/conf`
+directory.
+
+Build the container:
+```
+$ docker build -t mock-ec2-metadata .
+```
+
+And run the container, mounting the local filesystem containing your configuration file to `/go/conf`:
+```
+$ docker run --rm -p 80:8111 -v $(pwd):/go/conf  mock-ec2-metadata
+```
 
 ### Testing
 

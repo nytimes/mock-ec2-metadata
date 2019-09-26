@@ -13,6 +13,8 @@ func main() {
 
 	if _, err := os.Stat("./mock-ec2-metadata-config.json"); err == nil {
 		config.LoadJSONFile("./mock-ec2-metadata-config.json", &cfg)
+	} else if _, err := os.Stat("./conf/mock-ec2-metadata-config.json"); err == nil {
+		config.LoadJSONFile("./conf/mock-ec2-metadata-config.json", &cfg)
 	} else if _, err := os.Stat("/etc/mock-ec2-metadata-config.json"); err == nil {
 		config.LoadJSONFile("/etc/mock-ec2-metadata-config.json", &cfg)
 	} else {

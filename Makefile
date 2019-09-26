@@ -35,6 +35,9 @@ vet:
 build:
 	$(GOPATH)/bin/gox -verbose -output "bin/mock-ec2-metadata_${VERSION}_{{.OS}}_{{.Arch}}" -os="linux" -os="darwin" -arch="386" -arch="amd64" ./cmd/server
 
+docker:
+	$(GOPATH)/bin/gox -verbose -output "bin/mock-ec2-metadata" -os="linux" -arch="amd64" ./cmd/server
+
 release:
 	$(GOPATH)/bin/ghr --username NYTimes --token ${GITHUB_TOKEN} -r mock-ec2-metadata --replace ${VERSION} bin/
 
