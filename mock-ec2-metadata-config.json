@@ -4,23 +4,24 @@
         "Log": "./mock-metadata-app.log",
         "HTTPAccessLog": "./mock-metadata-access.log"
     },
-
-    "MetadataValues" : {
+    "MetadataValues": {
         "ami-id": "ami-1234",
         "ami-launch-index": "0",
         "ami-manifest-path": "(unknown)",
         "availability-zone": "ww-region-1a",
         "hostname": "mock-hostname",
+        "public-hostname": "mock-public-hostname",
+        "public-ipv4": "192.1.1.1",
         "instance-action": "mock-instance-action",
         "instance-id": "mock-instance-id",
         "instance-type": "mock-instance-type",
         "mac": "00:00:00:00:00:00",
         "profile": "mock-profile",
-        "reservation-id":"mock-reservation-id",
-        "user" : "mock-user",
+        "reservation-id": "mock-reservation-id",
+        "user": "mock-user",
         "security-credentials": {
-            "AccessKeyId" : "mock-access-key",
-            "SecretAccessKey" : "mock-secret-key",
+            "AccessKeyId": "mock-access-key",
+            "SecretAccessKey": "mock-secret-key",
             "Token": "mock-token",
             "Expiration": "2112-12-31T11:59:59Z",
             "Code": "Success"
@@ -29,34 +30,44 @@
             "mock-security-group"
         ]
     },
+    "DynamicDocument": {
+        "accountId": "071959437513",
+        "architecture": "x86_64",
+        "availabilityZone": "us-east-1b",
+        "imageId": "ami-05f27d4d6770a43d2",
+        "instanceId": "i-096fba6d03d36d262",
+        "instanceType": "t2.micro",
+        "privateIp": "172.31.93.227",
+        "region": "us-east-1",
+        "version": "2017-09-30"
+    },
     "MetadataPrefixes": [
         "/2009-04-04/meta-data",
         "/latest/meta-data"
     ],
-
-    "UserdataValues" : {
-        "environment_code" : "dev",
-        "environment_name" : "Development",
-        "app_code" : "mock",
-        "app_name" : "mock_app",
-        "app_email" : "nobody@nytimes.com",
+    "UserdataValues": {
+        "environment_code": "dev",
+        "environment_name": "Development",
+        "app_code": "mock",
+        "app_name": "mock_app",
+        "app_email": "nobody@nytimes.com",
         "app_description": "Mock Metadata Description",
-        "cluster_code" : "cluster_code",
-        "cluster_name" : "cluser_name",
-        "cluster_stack" : "cluster_stack",
-        "instance_configuration_name" : "test1",
-        "hostname_suffix" : "test1",
-        "volume_sizes_gb" : "8",
-        "volume_devices" : "/dev/sda1",
-        "volume_mount_points" : "/",
-        "volume_snapshot_frequencies" :"",
-        "snapshot_days_retained" : "7",
-        "region_code" : "iad2",
-        "hostname" : "mock-hostname",
-        "vpc_name" :"vpc",
-        "subnet_name" : "subnet",
-        "nimbul_key" :"key",
-        "build_tag" : "build_tag"
+        "cluster_code": "cluster_code",
+        "cluster_name": "cluser_name",
+        "cluster_stack": "cluster_stack",
+        "instance_configuration_name": "test1",
+        "hostname_suffix": "test1",
+        "volume_sizes_gb": "8",
+        "volume_devices": "/dev/sda1",
+        "volume_mount_points": "/",
+        "volume_snapshot_frequencies": "",
+        "snapshot_days_retained": "7",
+        "region_code": "iad2",
+        "hostname": "mock-hostname",
+        "vpc_name": "vpc",
+        "subnet_name": "subnet",
+        "nimbul_key": "key",
+        "build_tag": "build_tag"
     },
     "UserdataPrefixes": [
         "/2009-04-04/user-data",

@@ -44,6 +44,9 @@ clean:
 tests:
 	go test ./...
 
+run:
+	go run cmd/server/main.go
+
 fmt:
 	find . -name '*.go' -exec gofmt -w=true {} ';'
 

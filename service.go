@@ -24,6 +24,8 @@ type (
 		AmiManifestPath     string              `json:"ami-manifest-path"`
 		AvailabilityZone    string              `json:"availability-zone"`
 		Hostname            string              `json:"hostname"`
+		PublicHostname      string              `json:"public-hostname"`
+		PublicIpv4          string              `json:"public-ipv4"`
 		InstanceAction      string              `json:"instance-action"`
 		InstanceId          string              `json:"instance-id"`
 		InstanceType        string              `json:"instance-type"`
@@ -43,10 +45,23 @@ type (
 		MetadataPrefixes []string
 		UserdataValues   map[string]string
 		UserdataPrefixes []string
+		DynamicDocument  *DynamicDocument
 	}
 
 	MetadataService struct {
 		config *Config
+	}
+
+	DynamicDocument struct {
+		AccountId        string `json:"accountId"`
+		Architecture     string `json:"architecture"`
+		AvailabilityZone string `json:"availabilityZone"`
+		ImageId          string `json:"imageId"`
+		InstanceId       string `json:"instanceId"`
+		InstanceType     string `json:"instanceType"`
+		PrivateIp        string `json:"privateIp"`
+		Region           string `json:"region"`
+		Version          string `json:"version"`
 	}
 )
 
@@ -92,6 +107,14 @@ func (s *MetadataService) GetHostName(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, s.config.MetadataValues.Hostname)
 }
 
+func (s *MetadataService) GetPublicHostName(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, s.config.MetadataValues.PublicHostname)
+}
+
+func (s *MetadataService) GetPublicIpv4(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, s.config.MetadataValues.PublicIpv4)
+}
+
 func (s *MetadataService) GetInstanceAction(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, s.config.MetadataValues.InstanceAction)
 }
@@ -134,6 +157,18 @@ func (s *MetadataService) GetSecurityCredentials(w http.ResponseWriter, r *http.
 
 func (s *MetadataService) GetSecurityGroups(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, strings.Join(s.config.MetadataValues.SecurityGroups, "\n"))
+}
+
+func (s *MetadataService) GetDynamicDocument(w http.ResponseWriter, r *http.Request) {
+	js, err := json.Marshal(s.config.DynamicDocument)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// For some reason aws returns `text/plain`
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write(js)
 }
 
 func (s *MetadataService) GetSecurityCredentialDetails(w http.ResponseWriter, r *http.Request) {
@@ -199,6 +234,12 @@ func (service *MetadataService) Endpoints() map[string]map[string]http.HandlerFu
 		handlers[value+"/hostname"] = map[string]http.HandlerFunc{
 			"GET": plainText(service.GetHostName),
 		}
+		handlers[value+"/public-hostname"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetPublicHostName),
+		}
+		handlers[value+"/public-ipv4"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetPublicIpv4),
+		}
 		handlers[value+"/instance-action"] = map[string]http.HandlerFunc{
 			"GET": plainText(service.GetInstanceAction),
 		}
@@ -246,6 +287,9 @@ func (service *MetadataService) Endpoints() map[string]map[string]http.HandlerFu
 		handlers[value+"/"] = map[string]http.HandlerFunc{
 			"GET": plainText(service.GetUserData),
 		}
+	}
+	handlers["/latest/dynamic/instance-identity/document"] = map[string]http.HandlerFunc{
+		"GET": service.GetDynamicDocument,
 	}
 	handlers["/"] = map[string]http.HandlerFunc{
 		"GET": service.GetIndex,
