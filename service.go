@@ -194,7 +194,8 @@ func (s *MetadataService) GetSecurityCredentialDetails(w http.ResponseWriter, r 
 }
 
 func (s *MetadataService) GetToken(w http.ResponseWriter, r *http.Request)  {
-	randSeq(16)
+	token := randSeq(16)
+	fmt.Fprintf(w, token)
 }
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -307,7 +308,7 @@ func (service *MetadataService) Endpoints() map[string]map[string]http.HandlerFu
 		"GET": service.GetDynamicDocument,
 	}
 	handlers["/latest/api/token"] = map[string]http.HandlerFunc{
-		"GET": service.GetToken,
+		"PUT": service.GetToken,
 	}
 	handlers["/"] = map[string]http.HandlerFunc{
 		"GET": service.GetIndex,
