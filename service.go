@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"math/rand"
 
 	"github.com/NYTimes/gizmo/server"
 )
@@ -192,6 +193,20 @@ func (s *MetadataService) GetSecurityCredentialDetails(w http.ResponseWriter, r 
 		s.config.MetadataValues.SecurityCredentials)
 }
 
+func (s *MetadataService) GetToken(w http.ResponseWriter, r *http.Request)  {
+	randSeq(16)
+}
+
+var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+func randSeq(n int) string {
+    b := make([]rune, n)
+    for i := range b {
+        b[i] = letters[rand.Intn(len(letters))]
+    }
+    return string(b)
+}
+
 func (s *MetadataService) GetMetadataIndex(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, `hostname
 instance-id
@@ -290,6 +305,9 @@ func (service *MetadataService) Endpoints() map[string]map[string]http.HandlerFu
 	}
 	handlers["/latest/dynamic/instance-identity/document"] = map[string]http.HandlerFunc{
 		"GET": service.GetDynamicDocument,
+	}
+	handlers["/latest/api/token"] = map[string]http.HandlerFunc{
+		"GET": service.GetToken,
 	}
 	handlers["/"] = map[string]http.HandlerFunc{
 		"GET": service.GetIndex,
