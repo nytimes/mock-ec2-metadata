@@ -317,10 +317,10 @@ func (service *MetadataService) Endpoints() map[string]map[string]http.HandlerFu
 		handlers[value+"/security-groups"] = map[string]http.HandlerFunc{
 			"GET": plainText(service.GetSecurityGroups),
 		}
-		handlers[value+"/network/interfaces/{mac}/subnet-id"] = map[string]http.HandlerFunc{
+		handlers[value+"/network/interfaces/macs/{mac}/subnet-id"] = map[string]http.HandlerFunc{
 			"GET": plainText(service.GetSubnetId),
 		}
-		handlers[value+"/network/interfaces/{mac}/vpc-id"] = map[string]http.HandlerFunc{
+		handlers[value+"/network/interfaces/macs/{mac}/vpc-id"] = map[string]http.HandlerFunc{
 			"GET": plainText(service.GetVpcId),
 		}
 	}
