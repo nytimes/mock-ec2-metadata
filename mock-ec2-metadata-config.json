@@ -12,6 +12,8 @@
         "hostname": "mock-hostname",
         "public-hostname": "mock-public-hostname",
         "public-ipv4": "192.1.1.1",
+        "local-ipv4": "192.1.1.2",
+        "local-hostname": "mock-hostname",
         "instance-action": "mock-instance-action",
         "instance-id": "mock-instance-id",
         "instance-type": "mock-instance-type",
@@ -25,6 +27,12 @@
             "Token": "mock-token",
             "Expiration": "2112-12-31T11:59:59Z",
             "Code": "Success"
+        },
+        "network-interfaces": {
+            "00:00:00:00:00:00": {
+                "subnet-id": "mock-subnet-id",
+                "vpc-id": "mock-vpc-id"
+            }
         },
         "security-groups": [
             "mock-security-group"

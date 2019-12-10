@@ -3,9 +3,9 @@ package metadata
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"strings"
-	"math/rand"
 
 	"github.com/NYTimes/gizmo/server"
 )
@@ -20,24 +20,30 @@ type (
 	}
 
 	MetadataValues struct {
-		AmiId               string              `json:"ami-id"`
-		AmiLaunchIndex      string              `json:"ami-launch-index"`
-		AmiManifestPath     string              `json:"ami-manifest-path"`
-		AvailabilityZone    string              `json:"availability-zone"`
-		Hostname            string              `json:"hostname"`
-		PublicHostname      string              `json:"public-hostname"`
-		PublicIpv4          string              `json:"public-ipv4"`
-		InstanceAction      string              `json:"instance-action"`
-		InstanceId          string              `json:"instance-id"`
-		InstanceType        string              `json:"instance-type"`
-		LocalHostName       string              `json:"local-hostname"`
-		LocalIpv4           string              `json:"local-ipv4"`
-		Mac                 string              `json:"mac"`
-		Profile             string              `json:"profile"`
-		ReservationId       string              `json:"reservation-id"`
-		User                string              `json:"User"`
-		SecurityGroups      []string            `json:"security-groups"`
-		SecurityCredentials SecurityCredentials `json:"security-credentials"`
+		AmiId               string                       `json:"ami-id"`
+		AmiLaunchIndex      string                       `json:"ami-launch-index"`
+		AmiManifestPath     string                       `json:"ami-manifest-path"`
+		AvailabilityZone    string                       `json:"availability-zone"`
+		Hostname            string                       `json:"hostname"`
+		PublicHostname      string                       `json:"public-hostname"`
+		PublicIpv4          string                       `json:"public-ipv4"`
+		InstanceAction      string                       `json:"instance-action"`
+		InstanceId          string                       `json:"instance-id"`
+		InstanceType        string                       `json:"instance-type"`
+		LocalHostName       string                       `json:"local-hostname"`
+		LocalIpv4           string                       `json:"local-ipv4"`
+		Mac                 string                       `json:"mac"`
+		Profile             string                       `json:"profile"`
+		ReservationId       string                       `json:"reservation-id"`
+		User                string                       `json:"User"`
+		SecurityGroups      []string                     `json:"security-groups"`
+		SecurityCredentials SecurityCredentials          `json:"security-credentials"`
+		NetworkInterfaces   map[string]NetworkInterface  `json:"network-interfaces"`
+	}
+
+	NetworkInterface struct {
+		SubnetId string `json:"subnet-id"`
+		VpcId    string `json:"vpc-id"`
 	}
 
 	Config struct {
@@ -193,19 +199,35 @@ func (s *MetadataService) GetSecurityCredentialDetails(w http.ResponseWriter, r 
 		s.config.MetadataValues.SecurityCredentials)
 }
 
-func (s *MetadataService) GetToken(w http.ResponseWriter, r *http.Request)  {
+func (s *MetadataService) GetToken(w http.ResponseWriter, r *http.Request) {
 	token := randSeq(16)
 	fmt.Fprintf(w, token)
+}
+
+func (s *MetadataService) GetSubnetId(w http.ResponseWriter, r *http.Request) {
+	mac := server.Vars(r)["mac"]
+
+	subnet := s.config.MetadataValues.NetworkInterfaces[mac]
+
+	fmt.Fprintf(w, subnet.SubnetId)
+}
+
+func (s *MetadataService) GetVpcId(w http.ResponseWriter, r *http.Request) {
+	mac := server.Vars(r)["mac"]
+
+	subnet := s.config.MetadataValues.NetworkInterfaces[mac]
+
+	fmt.Fprintf(w, subnet.VpcId)
 }
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 func randSeq(n int) string {
-    b := make([]rune, n)
-    for i := range b {
-        b[i] = letters[rand.Intn(len(letters))]
-    }
-    return string(b)
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
 }
 
 func (s *MetadataService) GetMetadataIndex(w http.ResponseWriter, r *http.Request) {
@@ -294,6 +316,12 @@ func (service *MetadataService) Endpoints() map[string]map[string]http.HandlerFu
 		}
 		handlers[value+"/security-groups"] = map[string]http.HandlerFunc{
 			"GET": plainText(service.GetSecurityGroups),
+		}
+		handlers[value+"/network/interfaces/{mac}/subnet-id"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetSubnetId),
+		}
+		handlers[value+"/network/interfaces/{mac}/vpc-id"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetVpcId),
 		}
 	}
 
