@@ -39,6 +39,7 @@ type (
 		SecurityGroups      []string                     `json:"security-groups"`
 		SecurityCredentials SecurityCredentials          `json:"security-credentials"`
 		NetworkInterfaces   map[string]NetworkInterface  `json:"network-interfaces"`
+		IAM                 string                       `json:"iam"`
 	}
 
 	NetworkInterface struct {
@@ -96,6 +97,10 @@ func movedPermanently(redirectPath string) http.HandlerFunc {
 
 func (s *MetadataService) GetAmiId(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, s.config.MetadataValues.AmiId)
+}
+
+func (s *MetadataService) GetMetadataIAM(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, s.config.MetadataValues.IAM)
 }
 
 func (s *MetadataService) GetAmiLaunchIndex(w http.ResponseWriter, r *http.Request) {
@@ -176,6 +181,14 @@ func (s *MetadataService) GetDynamicDocument(w http.ResponseWriter, r *http.Requ
 	// For some reason aws returns `text/plain`
 	w.Header().Set("Content-Type", "text/plain")
 	w.Write(js)
+}
+
+func (s *MetadataService) GetDynamicIndex(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("instance-identity/"))
+}
+
+func (s *MetadataService) GetDynamicInstanceIdentityIndex(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("document"))
 }
 
 func (s *MetadataService) GetSecurityCredentialDetails(w http.ResponseWriter, r *http.Request) {
@@ -260,6 +273,9 @@ func (service *MetadataService) Endpoints() map[string]map[string]http.HandlerFu
 		handlers[value+"/ami-id"] = map[string]http.HandlerFunc{
 			"GET": plainText(service.GetAmiId),
 		}
+		handlers[value+"/iam"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetMetadataIAM),
+		}
 		handlers[value+"/ami-launch-index"] = map[string]http.HandlerFunc{
 			"GET": plainText(service.GetAmiLaunchIndex),
 		}
@@ -331,6 +347,12 @@ func (service *MetadataService) Endpoints() map[string]map[string]http.HandlerFu
 		handlers[value+"/"] = map[string]http.HandlerFunc{
 			"GET": plainText(service.GetUserData),
 		}
+	}
+	handlers["/latest/dynamic/"] = map[string]http.HandlerFunc{
+		"GET": service.GetDynamicIndex,
+	}
+	handlers["/latest/dynamic/instance-identity/"] = map[string]http.HandlerFunc{
+		"GET": service.GetDynamicInstanceIdentityIndex,
 	}
 	handlers["/latest/dynamic/instance-identity/document"] = map[string]http.HandlerFunc{
 		"GET": service.GetDynamicDocument,
