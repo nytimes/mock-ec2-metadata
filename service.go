@@ -18,6 +18,10 @@ type (
 		Code            string `json:"Code"`
 	}
 
+	Network struct {
+		Interfaces map[string][]string `json:"interfaces"`
+	}
+
 	MetadataValues struct {
 		AmiId               string              `json:"ami-id"`
 		AmiLaunchIndex      string              `json:"ami-launch-index"`
@@ -35,6 +39,7 @@ type (
 		User                string              `json:"User"`
 		SecurityGroups      []string            `json:"security-groups"`
 		SecurityCredentials SecurityCredentials `json:"security-credentials"`
+		Network             Network             `json:"network"`
 	}
 
 	Config struct {
@@ -43,6 +48,7 @@ type (
 		MetadataPrefixes []string
 		UserdataValues   map[string]string
 		UserdataPrefixes []string
+		NetworkPrefixes  []string
 	}
 
 	MetadataService struct {
@@ -134,6 +140,10 @@ func (s *MetadataService) GetSecurityCredentials(w http.ResponseWriter, r *http.
 
 func (s *MetadataService) GetSecurityGroups(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, strings.Join(s.config.MetadataValues.SecurityGroups, "\n"))
+}
+
+func (s *MetadataService) GetSecurityGroupIds(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, strings.Join(s.config.MetadataValues.Network.Interfaces["00:00:00:00:00:00"], "\n"))
 }
 
 func (s *MetadataService) GetSecurityCredentialDetails(w http.ResponseWriter, r *http.Request) {
@@ -237,6 +247,9 @@ func (service *MetadataService) Endpoints() map[string]map[string]http.HandlerFu
 		}
 		handlers[value+"/security-groups"] = map[string]http.HandlerFunc{
 			"GET": plainText(service.GetSecurityGroups),
+		}
+		handlers[value+"/network/interfaces/macs/00:00:00:00:00:00/security-group-ids"] = map[string]http.HandlerFunc{
+			"GET": plainText(service.GetSecurityGroupIds),
 		}
 	}
 
