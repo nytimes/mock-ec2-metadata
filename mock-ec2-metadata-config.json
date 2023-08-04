@@ -1,6 +1,6 @@
 {
     "Server": {
-        "HTTPPort": 8111,
+        "HTTPPort": 80,
         "Log": "./mock-metadata-app.log",
         "HTTPAccessLog": "./mock-metadata-access.log"
     },
@@ -27,7 +27,12 @@
         },
         "security-groups": [
             "mock-security-group"
-        ]
+        ],
+        "network": {
+            "interfaces":{
+                "00:00:00:00:00:00":["sg-mocksgid1", "sg-mocksgid2"]
+            }
+        }
     },
     "MetadataPrefixes": [
         "/2009-04-04/meta-data",
